@@ -2,7 +2,7 @@
  * ER/Studio Data Architect SQL Code Generation
  * Project :      Diagrama ER Casa del Arte.DM1
  *
- * Date Created : Friday, April 28, 2023 17:01:44
+ * Date Created : Tuesday, May 16, 2023 15:31:52
  * Target DBMS : Microsoft SQL Server 2017
  */
 
@@ -14,7 +14,7 @@ CREATE TABLE Categoría(
     id_categoria       int              IDENTITY(1,1),
     nombreCatg         nvarchar(50)     NOT NULL,
     descripcionCatg    nvarchar(100)    NULL,
-    estado             bit              NOT NULL,
+    estado             bit              DEFAULT 1 NOT NULL,
     CONSTRAINT PK4 PRIMARY KEY CLUSTERED (id_categoria)
 )
 go
@@ -40,7 +40,7 @@ CREATE TABLE Empresa(
     telefono         nchar(15)        NOT NULL,
     gmail            nvarchar(100)    NULL,
     logo             image            NULL,
-    estado           bit              NOT NULL,
+    estado           bit              DEFAULT 1 NOT NULL,
     CONSTRAINT PK20 PRIMARY KEY CLUSTERED (id_empresa)
 )
 go
@@ -61,7 +61,7 @@ CREATE TABLE Marca(
     id_marca            int              IDENTITY(1,1),
     nombreMarca         nvarchar(50)     NOT NULL,
     descripcionMarca    nvarchar(100)    NULL,
-    estado              bit              NOT NULL,
+    estado              bit              DEFAULT 1 NOT NULL,
     CONSTRAINT PK21 PRIMARY KEY CLUSTERED (id_marca)
 )
 go
@@ -80,6 +80,7 @@ go
 
 CREATE TABLE Movimiento(
     id_movimiento       int              IDENTITY(1,1),
+    id_producto         nchar(15)        NOT NULL,
     usuario_id          int              NOT NULL,
     tipo_movimiento     bit              NOT NULL,
     fecha_movimiento    datetime         NOT NULL,
@@ -98,33 +99,13 @@ ELSE
 go
 
 /* 
- * TABLE: MovimientoReporte 
- */
-
-CREATE TABLE MovimientoReporte(
-    id_movimientoReporte    char(10)    NOT NULL,
-    id_movimiento           int         NOT NULL,
-    id_reporte              int         NOT NULL,
-    CONSTRAINT PK25 PRIMARY KEY CLUSTERED (id_movimientoReporte)
-)
-go
-
-
-
-IF OBJECT_ID('MovimientoReporte') IS NOT NULL
-    PRINT '<<< CREATED TABLE MovimientoReporte >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE MovimientoReporte >>>'
-go
-
-/* 
  * TABLE: Permiso 
  */
 
 CREATE TABLE Permiso(
     id_permiso    int             IDENTITY(1,1),
     permiso       nvarchar(50)    NOT NULL,
-    estado        bit             NOT NULL,
+    estado        bit             DEFAULT 1 NOT NULL,
     CONSTRAINT PK18 PRIMARY KEY CLUSTERED (id_permiso)
 )
 go
@@ -150,7 +131,7 @@ CREATE TABLE Producto(
     descripcionProd    nvarchar(100)    NULL,
     fecha_ven          date             NULL,
     unidadesProd       int              NOT NULL,
-    estado             bit              NOT NULL,
+    estado             bit              DEFAULT 1 NOT NULL,
     CONSTRAINT PK1 PRIMARY KEY CLUSTERED (id_producto)
 )
 go
@@ -164,47 +145,6 @@ ELSE
 go
 
 /* 
- * TABLE: ProductoMovimiento 
- */
-
-CREATE TABLE ProductoMovimiento(
-    id_productoMovimiento    int          IDENTITY(1,1),
-    id_producto              nchar(15)    NOT NULL,
-    id_movimiento            int          NOT NULL,
-    CONSTRAINT PK23 PRIMARY KEY CLUSTERED (id_productoMovimiento)
-)
-go
-
-
-
-IF OBJECT_ID('ProductoMovimiento') IS NOT NULL
-    PRINT '<<< CREATED TABLE ProductoMovimiento >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE ProductoMovimiento >>>'
-go
-
-/* 
- * TABLE: Reporte 
- */
-
-CREATE TABLE Reporte(
-    id_reporte        int              IDENTITY(1,1),
-    usuario_id        int              NOT NULL,
-    fecha_creacion    datetime         NOT NULL,
-    descripcionRpt    nvarchar(100)    NULL,
-    CONSTRAINT PK24 PRIMARY KEY CLUSTERED (id_reporte)
-)
-go
-
-
-
-IF OBJECT_ID('Reporte') IS NOT NULL
-    PRINT '<<< CREATED TABLE Reporte >>>'
-ELSE
-    PRINT '<<< FAILED CREATING TABLE Reporte >>>'
-go
-
-/* 
  * TABLE: Rol 
  */
 
@@ -212,7 +152,7 @@ CREATE TABLE Rol(
     ID_Rol            int              IDENTITY(1,1),
     nombreRol         nvarchar(50)     NOT NULL,
     descripcionRol    nvarchar(100)    NULL,
-    estado            bit              NOT NULL,
+    estado            bit              DEFAULT 1 NOT NULL,
     CONSTRAINT PK3 PRIMARY KEY CLUSTERED (ID_Rol)
 )
 go
@@ -261,7 +201,7 @@ CREATE TABLE Usuario(
     fecha_nac           datetime        NOT NULL,
     cedula              nchar(16)       NOT NULL,
     contraseña          nvarchar(50)    NOT NULL,
-    estado              bit             NOT NULL,
+    estado              bit             DEFAULT 1 NOT NULL,
     CONSTRAINT PK2 PRIMARY KEY CLUSTERED (usuario_id)
 )
 go
@@ -287,27 +227,15 @@ ELSE
 go
 
 /* 
- * INDEX: Ref2445 
+ * INDEX: Ref147 
  */
 
-CREATE INDEX Ref2445 ON MovimientoReporte(id_reporte)
+CREATE INDEX Ref147 ON Movimiento(id_producto)
 go
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('MovimientoReporte') AND name='Ref2445')
-    PRINT '<<< CREATED INDEX MovimientoReporte.Ref2445 >>>'
+IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('Movimiento') AND name='Ref147')
+    PRINT '<<< CREATED INDEX Movimiento.Ref147 >>>'
 ELSE
-    PRINT '<<< FAILED CREATING INDEX MovimientoReporte.Ref2445 >>>'
-go
-
-/* 
- * INDEX: Ref2246 
- */
-
-CREATE INDEX Ref2246 ON MovimientoReporte(id_movimiento)
-go
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('MovimientoReporte') AND name='Ref2246')
-    PRINT '<<< CREATED INDEX MovimientoReporte.Ref2246 >>>'
-ELSE
-    PRINT '<<< FAILED CREATING INDEX MovimientoReporte.Ref2246 >>>'
+    PRINT '<<< FAILED CREATING INDEX Movimiento.Ref147 >>>'
 go
 
 /* 
@@ -332,42 +260,6 @@ IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('Producto') AND n
     PRINT '<<< CREATED INDEX Producto.Ref2137 >>>'
 ELSE
     PRINT '<<< FAILED CREATING INDEX Producto.Ref2137 >>>'
-go
-
-/* 
- * INDEX: Ref140 
- */
-
-CREATE INDEX Ref140 ON ProductoMovimiento(id_producto)
-go
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('ProductoMovimiento') AND name='Ref140')
-    PRINT '<<< CREATED INDEX ProductoMovimiento.Ref140 >>>'
-ELSE
-    PRINT '<<< FAILED CREATING INDEX ProductoMovimiento.Ref140 >>>'
-go
-
-/* 
- * INDEX: Ref2241 
- */
-
-CREATE INDEX Ref2241 ON ProductoMovimiento(id_movimiento)
-go
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('ProductoMovimiento') AND name='Ref2241')
-    PRINT '<<< CREATED INDEX ProductoMovimiento.Ref2241 >>>'
-ELSE
-    PRINT '<<< FAILED CREATING INDEX ProductoMovimiento.Ref2241 >>>'
-go
-
-/* 
- * INDEX: Ref243 
- */
-
-CREATE INDEX Ref243 ON Reporte(usuario_id)
-go
-IF EXISTS (SELECT * FROM sys.indexes WHERE object_id=OBJECT_ID('Reporte') AND name='Ref243')
-    PRINT '<<< CREATED INDEX Reporte.Ref243 >>>'
-ELSE
-    PRINT '<<< FAILED CREATING INDEX Reporte.Ref243 >>>'
 go
 
 /* 
@@ -415,19 +307,9 @@ ALTER TABLE Movimiento ADD CONSTRAINT RefUsuario42
     REFERENCES Usuario(usuario_id)
 go
 
-
-/* 
- * TABLE: MovimientoReporte 
- */
-
-ALTER TABLE MovimientoReporte ADD CONSTRAINT RefReporte45 
-    FOREIGN KEY (id_reporte)
-    REFERENCES Reporte(id_reporte)
-go
-
-ALTER TABLE MovimientoReporte ADD CONSTRAINT RefMovimiento46 
-    FOREIGN KEY (id_movimiento)
-    REFERENCES Movimiento(id_movimiento)
+ALTER TABLE Movimiento ADD CONSTRAINT RefProducto47 
+    FOREIGN KEY (id_producto)
+    REFERENCES Producto(id_producto)
 go
 
 
@@ -435,39 +317,14 @@ go
  * TABLE: Producto 
  */
 
-ALTER TABLE Producto ADD CONSTRAINT RefMarca37 
-    FOREIGN KEY (id_marca)
-    REFERENCES Marca(id_marca)
-go
-
 ALTER TABLE Producto ADD CONSTRAINT RefCategoría4 
     FOREIGN KEY (id_categoria)
     REFERENCES Categoría(id_categoria)
 go
 
-
-/* 
- * TABLE: ProductoMovimiento 
- */
-
-ALTER TABLE ProductoMovimiento ADD CONSTRAINT RefProducto40 
-    FOREIGN KEY (id_producto)
-    REFERENCES Producto(id_producto)
-go
-
-ALTER TABLE ProductoMovimiento ADD CONSTRAINT RefMovimiento41 
-    FOREIGN KEY (id_movimiento)
-    REFERENCES Movimiento(id_movimiento)
-go
-
-
-/* 
- * TABLE: Reporte 
- */
-
-ALTER TABLE Reporte ADD CONSTRAINT RefUsuario43 
-    FOREIGN KEY (usuario_id)
-    REFERENCES Usuario(usuario_id)
+ALTER TABLE Producto ADD CONSTRAINT RefMarca37 
+    FOREIGN KEY (id_marca)
+    REFERENCES Marca(id_marca)
 go
 
 
